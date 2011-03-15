@@ -8,6 +8,7 @@ import os.path
 import re
 import string
 import glob
+from nltk import FreqDist
 
 ###
 # Parse the file and create the output
@@ -34,8 +35,11 @@ def parse(filename):
     entry_string_split = entry_string.split() 
     entry_string_no_stopwords = remove_stopwords(entry_string_split) 
 
+    fd = FreqDist(entry_string_no_stopwords)
+
     fout = open(outfilename, "w")
-    fout.write(" ".join(entry_string_no_stopwords))
+    sys.stdout.write(outfilename)
+    fout.write(" ".join(fd.keys()))
     fout.close() 
 
 def remove_stopwords(inwords):
@@ -55,7 +59,7 @@ Arguments:
 """)
 
 def process_files():
-    for fold_number in range(0,1):
+    for fold_number in range(0,10):
         for classname in ['neg', 'pos']:
             for number in range(0,100):
                 filenames = base_directory + "\\" + classname + "\\" + "cv" + str(fold_number) + str(number).zfill(2) + "*.txt"

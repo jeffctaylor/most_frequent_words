@@ -96,26 +96,21 @@ class ReutersParser(sgmllib.SGMLParser):
              fullfilepath = directory + "\\" + filename
              sys.stdout.write(fullfilepath + "\n") 
              doc_file = open(fullfilepath, "w")
-             self.title = self.title.lower()
-             self.title = re.sub(r'\'', r'\'', self.title)
-             doc_file.write(self.title + " ")
-    # Strip out multiple spaces in the body
-             self.body = re.sub(r'\s+', r' ', self.body)
-   # escape apostrophe characters
-             self.body = re.sub(r'\'', r'\'', self.body)
-             self.body = self.body.rstrip("\r\n")
-          # convert to lower case
-             self.body = self.body.lower()
-		# remove punctuation
-             for c in string.punctuation:
-                self.body = self.body.replace(c, " ")
-          # remove tokens consisting of nothing but digits
-             self.body = re.sub("\d+", "", self.body)
-          # make the string into a list and remove stopwords from it
-             self.body_split = self.body.split()
-             self.body_no_stopwords = remove_stopwords(self.body_split)
 
-             fd = FreqDist(self.body_no_stopwords)
+             # we're only interested in the title and body, so just combine them
+             all_content = self.title + self.body
+             # convert to lowercase
+             all_content = all_content.lower()
+             #remove everything except letters and spaces
+             all_content = re.sub("[^a-z ]", " ", all_content)
+             #strip out multiple spaces
+             all_content = re.sub(r'\s+', r' ', all_content) 
+
+          # make the string into a list and remove stopwords from it
+             all_content_split = all_content.split()
+             all_content_no_stopwords = remove_stopwords(all_content_split)
+
+             fd = FreqDist(all_content_no_stopwords)
 
              doc_file.write(" ".join(fd.keys()))
              doc_file.close()

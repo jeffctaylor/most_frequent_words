@@ -5,6 +5,7 @@
 ###############################################################################
 import sgmllib
 import getopt
+from nltk import FreqDist
 
 ###############################################################################
 # ReutersParser - an SGML parser
@@ -97,7 +98,7 @@ class ReutersParser(sgmllib.SGMLParser):
              doc_file = open(fullfilepath, "w")
              self.title = self.title.lower()
              self.title = re.sub(r'\'', r'\'', self.title)
-             doc_file.write("' " + self.title + " ")
+             doc_file.write(self.title + " ")
     # Strip out multiple spaces in the body
              self.body = re.sub(r'\s+', r' ', self.body)
    # escape apostrophe characters
@@ -105,7 +106,6 @@ class ReutersParser(sgmllib.SGMLParser):
              self.body = self.body.rstrip("\r\n")
           # convert to lower case
              self.body = self.body.lower()
-             #self.body = re.sub(r' ', r'\n', self.body)
 		# remove punctuation
              for c in string.punctuation:
                 self.body = self.body.replace(c, " ")
@@ -114,14 +114,10 @@ class ReutersParser(sgmllib.SGMLParser):
           # make the string into a list and remove stopwords from it
              self.body_split = self.body.split()
              self.body_no_stopwords = remove_stopwords(self.body_split)
-             doc_file.write("'")
-             doc_file.write(str(self.body_no_stopwords))
-#          doc_file.write("',")
-#          if category in self.topics:
-#             doc_file.write("true")
-#          else:
-#             doc_file.write("false")
-#          doc_file.write("\n")
+
+             fd = FreqDist(self.body_no_stopwords)
+
+             doc_file.write(" ".join(fd.keys()))
              doc_file.close()
 #
            # Reset variables

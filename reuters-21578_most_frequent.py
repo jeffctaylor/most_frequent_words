@@ -92,41 +92,37 @@ class ReutersParser(sgmllib.SGMLParser):
 
        if filename != "junk" and filename != "/dev/null":
           if category in self.topics:
-             sys.stdout.write(directory + "\\" + filename + "\n") 
-#          doc_file = open(filename, "a")
-#          if (include_titles):
-#              self.title = self.title.lower()
-#              self.title = re.sub(r'\'', r'\'', self.title)
-#              doc_file.write("' " + self.title + " ")
-#     # Strip out multiple spaces in the body
-#          self.body = re.sub(r'\s+', r' ', self.body)
-#   # escape apostrophe characters
-#          self.body = re.sub(r'\'', r'\'', self.body)
-#          self.body = self.body.rstrip("\r\n")
-#          # convert to lower case
-#          self.body = self.body.lower()
-#          #self.body = re.sub(r' ', r'\n', self.body)
-#		# remove punctuation
-#		#self.body_nopunc = self.body.translate(string.maketrans("",""), string.punctuation)
-#          for c in string.punctuation:
-#             self.body = self.body.replace(c, " ")
-#          # remove tokens consisting of nothing but digits
-#          self.body = re.sub("\d+", "", self.body)
-#		# make the string into a list and remove stopwords from it
-#          self.body_split = self.body.split()
-#          self.body_no_stopwords = remove_stopwords(self.body_split)
-#          doc_file.write("'")
-#          if (self.body_no_stopwords):
-#             for i in range(0, numwords):
-#                if (i < len(self.body_no_stopwords)):
-#                   doc_file.write(self.body_no_stopwords[i] + " ")
+             fullfilepath = directory + "\\" + filename
+             sys.stdout.write(fullfilepath + "\n") 
+             doc_file = open(fullfilepath, "w")
+             self.title = self.title.lower()
+             self.title = re.sub(r'\'', r'\'', self.title)
+             doc_file.write("' " + self.title + " ")
+    # Strip out multiple spaces in the body
+             self.body = re.sub(r'\s+', r' ', self.body)
+   # escape apostrophe characters
+             self.body = re.sub(r'\'', r'\'', self.body)
+             self.body = self.body.rstrip("\r\n")
+          # convert to lower case
+             self.body = self.body.lower()
+             #self.body = re.sub(r' ', r'\n', self.body)
+		# remove punctuation
+             for c in string.punctuation:
+                self.body = self.body.replace(c, " ")
+          # remove tokens consisting of nothing but digits
+             self.body = re.sub("\d+", "", self.body)
+          # make the string into a list and remove stopwords from it
+             self.body_split = self.body.split()
+             self.body_no_stopwords = remove_stopwords(self.body_split)
+             doc_file.write("'")
+             doc_file.write(str(self.body_no_stopwords))
 #          doc_file.write("',")
 #          if category in self.topics:
 #             doc_file.write("true")
 #          else:
 #             doc_file.write("false")
 #          doc_file.write("\n")
-#          doc_file.close()
+             doc_file.close()
 #
            # Reset variables
        self.in_topics = 0

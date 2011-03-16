@@ -1,16 +1,6 @@
 #!/usr/bin/env python
 
 ###############################################################################
-# Program information
-###############################################################################
-__author__ = "Craig A. Struble"
-__date__ = "23 August 2005"
-__version__ = "$Revision: 1.1.1.1 $"
-__credits__ = """David D. Lewis, the creator of the Reuters collection
-Yuen-Hsien Tseng, wrote perl tools to do something similar
-"""
-
-###############################################################################
 # Imports
 ###############################################################################
 import sgmllib
@@ -22,7 +12,7 @@ import getopt
 class ReutersParser(sgmllib.SGMLParser):
     """A class to parse text from Reuters SGML files."""
 
-    def parse(self, s):
+    def parse(self, s, category):
         """Parse the given string 's', which is an SGML encoded file."""
 
         self.feed(s)
@@ -90,60 +80,54 @@ class ReutersParser(sgmllib.SGMLParser):
        import re
        import string
 
-       if (True):
-          filename = "/dev/null"
-          if self.reuters_lewis_split == "TRAIN" and self.reuters_topics == "YES":
-              if (split_files):
-                 filename = "/work/jtaylo38/arff/modapte_" + category + "_" + str(numwords) + "_train.arff"
-              else:
-                 filename = "/work/jtaylo38/arff/modapte_" + category + "_" + str(numwords) + ".arff"
-          elif self.reuters_lewis_split == "TEST" and self.reuters_topics == "YES":
-              if (split_files):
-                  filename = "/work/jtaylo38/arff/modapte_" + category + "_" + str(numwords) + "_arff"
-              else:
-                  filename = "/work/jtaylo38/arff/modapte_" + category + "_" + str(numwords) + ".arff"
-          elif self.reuters_lewis_split == "NOT-USED" and (self.reuters_topics == "YES" or self.reuters_topics == "NO" or self.reuters_topics == "BYPASS"):
-             filename = "junk"
+       filename = "/dev/null"
+       if self.reuters_lewis_split == "TRAIN" and self.reuters_topics == "YES":
+          directory = "C:\\Users\\JeffT\\University Work\\phd\\corpora\\reuters-21578\\" + category
+          filename = self.doc_id
+       elif self.reuters_lewis_split == "TEST" and self.reuters_topics == "YES":
+          directory = "C:\\Users\\JeffT\\University Work\\phd\\corpora\\reuters-21578\\" + category
+          filename = self.doc_id
+       elif self.reuters_lewis_split == "NOT-USED" and (self.reuters_topics == "YES" or self.reuters_topics == "NO" or self.reuters_topics == "BYPASS"):
+          filename = "junk"
 
-          if filename != "junk":
-             if (prepend_arff and not os.path.exists(filename)):
-                 write_arff_header(filename)
-             doc_file = open(filename, "a")
-             if (include_titles):
-                 self.title = self.title.lower()
-                 self.title = re.sub(r'\'', r'\'', self.title)
-                 doc_file.write("' " + self.title + " ")
-        # Strip out multiple spaces in the body
-             self.body = re.sub(r'\s+', r' ', self.body)
-      # escape apostrophe characters
-             self.body = re.sub(r'\'', r'\'', self.body)
-             self.body = self.body.rstrip("\r\n")
-             # convert to lower case
-             self.body = self.body.lower()
-             #self.body = re.sub(r' ', r'\n', self.body)
-		# remove punctuation
-		#self.body_nopunc = self.body.translate(string.maketrans("",""), string.punctuation)
-             for c in string.punctuation:
-                self.body = self.body.replace(c, " ")
-             # remove tokens consisting of nothing but digits
-             self.body = re.sub("\d+", "", self.body)
-		# make the string into a list and remove stopwords from it
-             self.body_split = self.body.split()
-             self.body_no_stopwords = remove_stopwords(self.body_split)
-             doc_file.write("'")
-             if (self.body_no_stopwords):
-                for i in range(0, numwords):
-                   if (i < len(self.body_no_stopwords)):
-                      doc_file.write(self.body_no_stopwords[i] + " ")
-#           doc_file.write("'" + str(self.topics) + "/"  + "'\n")
-             doc_file.write("',")
-             if category in self.topics:
-                doc_file.write("true")
-             else:
-                doc_file.write("false")
-             doc_file.write("\n")
-             doc_file.close()
-
+       if filename != "junk" and filename != "/dev/null":
+          if category in self.topics:
+             sys.stdout.write(directory + "\\" + filename + "\n") 
+#          doc_file = open(filename, "a")
+#          if (include_titles):
+#              self.title = self.title.lower()
+#              self.title = re.sub(r'\'', r'\'', self.title)
+#              doc_file.write("' " + self.title + " ")
+#     # Strip out multiple spaces in the body
+#          self.body = re.sub(r'\s+', r' ', self.body)
+#   # escape apostrophe characters
+#          self.body = re.sub(r'\'', r'\'', self.body)
+#          self.body = self.body.rstrip("\r\n")
+#          # convert to lower case
+#          self.body = self.body.lower()
+#          #self.body = re.sub(r' ', r'\n', self.body)
+#		# remove punctuation
+#		#self.body_nopunc = self.body.translate(string.maketrans("",""), string.punctuation)
+#          for c in string.punctuation:
+#             self.body = self.body.replace(c, " ")
+#          # remove tokens consisting of nothing but digits
+#          self.body = re.sub("\d+", "", self.body)
+#		# make the string into a list and remove stopwords from it
+#          self.body_split = self.body.split()
+#          self.body_no_stopwords = remove_stopwords(self.body_split)
+#          doc_file.write("'")
+#          if (self.body_no_stopwords):
+#             for i in range(0, numwords):
+#                if (i < len(self.body_no_stopwords)):
+#                   doc_file.write(self.body_no_stopwords[i] + " ")
+#          doc_file.write("',")
+#          if category in self.topics:
+#             doc_file.write("true")
+#          else:
+#             doc_file.write("false")
+#          doc_file.write("\n")
+#          doc_file.close()
+#
            # Reset variables
        self.in_topics = 0
        self.in_title = 0
@@ -215,44 +199,17 @@ def remove_stopwords(inwords):
    filteredtext = [t for t in inwords if t.lower() not in stopwords]
    return filteredtext
 
-def usage():
-    sys.stdout.write("""
-Usage: """ + sys.argv[0] + """ [-h] -c category -n num_words [-s stoplist] [--split] [--prepend] files
-
-Arguments:
--h (or --help): print this usage message and exit
--c (or --category) category: name of a valid Reuters category (e.g. acq) (required argument)
--n (or --numwords) num_words: integer value indicating the number of words to index (required argument)
--s (or --stoplist) stoplist: location of stoplist file (default is ./aux/english.stop) (optional argument)
---split: causes 2 files to be created, for training and testing (default is one file)
---prepend: causes arff header information to be written to the file(s) (default is no arff header information)
-files: list of files to convert
-""")
-
-# needs support for split training and testing files
-def write_arff_header(filename):
-    f = open(filename, "w")
-    f.write("""@relation '""" + category + """ """ + str(numwords) + """'\n
-@attribute Text string
-@attribute class {false,true}\n
-@data\n""")
-    #sys.stdout.write("Writing arff header to new file " + filename + "\n")
-    f.close()
-
 def main(argv):
     global stopwords_file
-    global split_files
-    global category
     global numwords
     global filenames
     global prepend_arff
     global include_titles
     stopwords_file = "C:\\Users\\JeffT\\Dropbox\\PhD\\aux_files\\english.stop"
-    split_files = False
     prepend = False
     include_titles = False
     try:
-        opts, args = getopt.getopt(argv, "c:n:s:", ["category=", "numwords=", "stoplist=", "split", "prepend", "titles"])
+        opts, args = getopt.getopt(argv, "n:s:", ["numwords=", "stoplist=", "titles"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -260,20 +217,10 @@ def main(argv):
         if opt in ("-h", "--help"):
             usage()
             sys.exit()
-        if opt in ("--split"):
-            # create separate training and testing files
-            # default is one merged file
-            split_files = True
-        if opt in ("--prepend"):
-            # prepend the file with arff header information
-            # default is not to prepend
-            prepend_arff = True
         if opt in ("--titles"):
             # include document titles
             # default is no titles, just body text
             include_titles = True
-        if opt in ("-c", "--category"):
-            category = arg
         if opt in ("-n", "--numwords"):
             numwords = int(arg)
         if opt in ("-s", "--stoplist"):
@@ -290,24 +237,26 @@ import os
 import os.path
 
 if __name__ == '__main__':
+
+    categories = ['acq', 'alum', 'austdlr', 'austral', 'barley', 'bfr', 'bop', 'can', 'carcass', 'castor-meal', 'castor-oil', 'castorseed', 'citruspulp', 'cocoa', 'coconut', 'coconut-oil', 'coffee', 'copper', 'copra-cake', 'corn', 'corn-oil', 'cornglutenfeed', 'cotton', 'cotton-meal', 'cotton-oil', 'cottonseed', 'cpi', 'cpu', 'crude', 'cruzado', 'dfl', 'dkr', 'dlr', 'dmk', 'drachma', 'earn', 'escudo', 'f-cattle', 'ffr', 'fishmeal', 'flaxseed', 'fuel', 'gas', 'gnp', 'gold', 'grain', 'groundnut', 'groundnut-meal', 'groundnut-oil', 'heat', 'hk', 'hog', 'housing', 'income', 'instal-debt', 'interest', 'inventories', 'ipi', 'iron-steel', 'jet', 'jobs', 'l-cattle', 'lead', 'lei', 'lin-meal', 'lin-oil', 'linseed', 'lit', 'livestock', 'lumber', 'lupin', 'meal-feed', 'mexpeso', 'money-fx', 'money-supply', 'naphtha', 'nat-gas', 'nickel', 'nkr', 'nzdlr', 'oat', 'oilseed', 'orange', 'palladium', 'palm-meal', 'palm-oil', 'palmkernel', 'peseta', 'pet-chem', 'platinum', 'plywood', 'pork-belly', 'potato', 'propane', 'rand', 'rape-meal', 'rape-oil', 'rapeseed', 'red-bean', 'reserves', 'retail', 'rice', 'ringgit', 'rubber', 'rupiah', 'rye', 'saudriyal', 'sfr', 'ship', 'silk', 'silver', 'singdlr', 'skr', 'sorghum', 'soy-meal', 'soy-oil', 'soybean', 'stg', 'strategic-metal', 'sugar', 'sun-meal', 'sun-oil', 'sunseed', 'tapioca', 'tea', 'tin', 'trade', 'tung', 'tung-oil', 'veg-oil', 'wheat', 'wool', 'wpi', 'yen', 'zinc']
+    
     global stopwords
-    category = ""
-    numwords = ""
     filenames = ""
     if (len(sys.argv) < 2):
-        usage()
+        sys.stdout.write("Files?\n")
 	sys.exit(2)
     else:
         main(sys.argv[1:])
 
-    if (category == "" or numwords == "" or filenames == ""):
-	usage()
+    if (filenames == ""):
+	sys.stdout.write("Something's wrong.\n")
 	sys.exit()
 
     stopwords = open(stopwords_file, 'r').read().split()
 
-    for fname in filenames:
-        f = open(fname, "r")
-        s = f.read()
-        parser = ReutersParser()
-        parser.parse(s)
+    for category in categories:
+        for fname in filenames:
+            f = open(fname, "r")
+            s = f.read()
+            parser = ReutersParser()
+            parser.parse(s, category)

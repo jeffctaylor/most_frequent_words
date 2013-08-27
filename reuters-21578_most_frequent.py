@@ -242,6 +242,7 @@ if __name__ == '__main__':
     stopwords = open(stopwords_file, 'r').read().split()
 
     for category in categories:
+        create_directory(category)
         for fname in filenames:
             f = open(fname, "r")
             s = f.read()
